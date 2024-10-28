@@ -1,0 +1,309 @@
+@import "https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css";
+
+/* https://brand.colostate.edu/color/ */
+:root {
+  --csu-green: #1E4D2B;
+  --csu-gold: #C8C372;
+  --csu-aggie-orange: #D9782D;
+  --csu-energy-green: #CFFC00;
+  --csu-flower-trial-red: #E56A54;
+  --csu-powered-purple: #7E5475;
+  --csu-lovers-lane: #82C503;
+  --csu-font-color: #59595B;
+  --header-height: 60px;
+  --side-panel-width: 30%;
+}
+
+/* poppins-600 - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  src: url('assets/fonts/poppins-v21-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+.csu-font-color {
+  color: var(--csu-font-color)
+}
+
+.csu-green {
+  color: var(--csu-green)
+}
+
+.csu-gold {
+  color: var(--csu-gold)
+}
+
+.csu-energy-green {
+  color: var(--csu-energy-green)
+}
+
+.csu-flower-trial-red {
+  color: var(--csu-flower-trial-red)
+}
+
+.csu-powdered-purple {
+  color: var(--csu-powered-purple)
+}
+
+.csu-lovers-lane {
+  color: var(--csu-lovers-lane)
+}
+
+.csu-white {
+  color: white
+}
+
+.csu-green-bg {
+  background-color: var(--csu-green)
+}
+
+.csu-gold-bg {
+  background-color: var(--csu-gold)
+}
+
+.csu-energy-green-bg {
+  background-color: var(--csu-energy-green)
+}
+
+.csu-flower-trial-red-bg {
+  background-color: var(--csu-flower-trial-red)
+}
+
+.csu-powdered-purple-bg {
+  background-color: var(--csu-powered-purple)
+}
+
+.csu-lovers-lane-bg {
+  background-color: var(--csu-lovers-lane)
+}
+
+.csu-white-bg {
+  background-color: white
+}
+
+.csu-aggie-orange-bg {
+  background-color: var(--csu-aggie-orange)
+}
+
+html, body, #app {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  font-family: Poppins;
+  color: var(--csu-font-color)
+}
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  height: 100vh;
+  display: flex;
+}
+
+#csu-trees-header {
+  display: grid;
+  grid-template-columns: 25px 1fr; /* One column for blocks, one for content */
+  background-color: var(--csu-green); /* CSU green */
+  padding: 0; /* Remove padding to prevent misalignment */
+  height: 100px;
+  align-items: center;
+  position: absolute;
+  border-radius: 2px;
+  z-index: 2;
+  width: 70%;
+}
+
+.color-blocks {
+  display: grid;
+  grid-template-rows: 35% 20% 20% 20% 5%; /* Set row heights */
+  height: 100%; /* Ensure the blocks take up the full height */
+}
+
+.color-blocks .block {
+  width: 25px;
+  margin: 0;
+}
+
+.header-content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 20px;
+  align-items: center;
+}
+
+#more-info {
+  z-index: 10;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background-color: transparent;
+  color: var(--csu-energy-green);
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+#more-info:hover {
+  color: white;
+  cursor: pointer;
+}
+
+.logo img {
+  height: 120px;
+  width: auto;
+  margin-bottom: -30px;
+}
+
+#centroid-logo {
+  opacity: 0.5;
+}
+
+.content-container {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+}
+
+main#view {
+	flex-grow: 1;
+	background-color: #e9e9e9;
+  transition: flex-basis 0.3s;
+}
+
+main#view.expanded {
+  flex-basis: 100%;
+}
+
+#right-sidebar {
+  flex-basis: var(--side-panel-width);
+	transition: flex-basis 0.3s ease-in-out;
+  position: relative;
+	padding: 10px;
+  border-left: 1px darkgray solid;
+  box-shadow: -1px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+#right-sidebar.collapsed {
+	flex-basis: 0;
+	padding: 1px;
+}
+
+#right-sidebar-content {
+  height: calc(100vh - var(--header-height));
+	overflow-y: auto; /* This will allow scrolling */
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding-bottom: 10px; 
+}
+
+#sidebar-header {
+  position: sticky;
+  top: 0;
+  margin: 0;
+  padding: 10px;
+  width: 100%;
+  z-index: 10;
+  height: 100px
+}
+
+button#toggle-button {
+  position: absolute;
+  width: 40px;
+  height: 60px;
+	left: 0;
+  margin: 0;
+	top: 40px;
+	transform: translateY(-50%) translateX(-100%); /* This, combined with the above properties, centers the button vertically and moves it to the left by its width */
+	z-index: 39;
+	background-color: whitesmoke;
+  box-shadow: none !important;
+  border-right: none !important;
+  border-left: 1px darkgray solid;
+  border-top: 1px darkgray solid;
+  border-bottom: 1px darkgray solid;
+  border-radius: 0 !important;
+}
+
+#notification {
+  position: absolute;
+  z-index: 999;
+  right: 10px;
+  top: 10px;
+  width: 400px;
+  animation: notifade 1s ease-in-out;
+}
+
+a {
+  color: var(--csu-green);
+}
+a:hover {
+  color: var(--csu-energy-green);
+}
+
+/* transition effects for our collapsible panel component */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px); /* Slightly shift up */
+}
+.fade-enter-to, .fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tree-type {
+  color: #161618;
+  background-color: var(--csu-aggie-orange);
+  width: 125px
+}
+
+.tree-type:hover {
+  color: white;
+}
+
+.tree-type.selected {
+  background-color: var(--csu-green);
+  color: white;
+}
+
+@keyframes notifade {
+  0% {
+    display: none;
+    opacity: 0;
+    height: 0;
+  }
+  1% {
+    display: block;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.runner {
+  background: repeating-linear-gradient(to right, white 0%, var(--csu-green) 50%);
+  width: calc(100vw - var(--side-panel-width));
+  height: 2px;
+  background-size: 200% auto;
+  background-position: 0 100%;
+  animation: gradient 0.5s infinite;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+  position: absolute;
+  top: var(--header-height);
+  right: 0;
+  z-index: 99;
+}
+
+@keyframes gradient {
+  0% { background-position: 100% 100%; }
+  100% { background-position: 0% 100%; }
+}
