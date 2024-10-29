@@ -1,6 +1,6 @@
 {
   "name": "csu-trees",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "description": "trees on the campus of colorado state university",
   "main": "index.js",
   "scripts": {

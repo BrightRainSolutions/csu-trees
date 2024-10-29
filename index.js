@@ -35,7 +35,7 @@ createApp({
         <div class="block csu-powdered-purple-bg"></div>
       </div>
       <div class="header-content">
-        <span id="more-info" class="is-size-6" @click="showingInformationModal=true">MORE INFO</span>
+        <span id="more-info" class="is-size-6 csu-trees-action" @click="showingInformationModal=true">MORE INFO</span>
         <div class="logo ml-4">
           <figure class="image">
             <img src="./assets/csu-logo.svg" alt="Colorado State University Logo" />
@@ -45,6 +45,7 @@ createApp({
           <h1 class="title is-3 has-text-white">CSU TREES</h1>
           <h2 class="subtitle is-4 has-text-white">Colorado State University</h2>
         </div>
+        <span id="clear-selection" v-show="selectedTreeType != null" class="is-size-6 csu-trees-action" @click="clearSelectedTrees">CLEAR SELECTED</span>
       </div>
     </div>  
 
@@ -68,7 +69,7 @@ createApp({
         <div id="right-sidebar-content">
           <div id="sidebar-header" class="has-text-centered csu-energy-green-bg csu-white">
             <div class="title">ALL THE TREES</div>
-            <div class="subtitle">Tree Types in the Current Map</div>
+            <div class="subtitle"><span v-show="currentTreeTypes.length>0">{{ currentTreeTypes.length }}</span> Tree Types in the Current Map</div>
           </div>
           <div class="tree-types-container is-flex is-flex-wrap-wrap is-align-items-center m-4">
             <div v-show="this.currentTreeTypes.length == 0" class="m-4 has-text-centered">
@@ -116,12 +117,20 @@ createApp({
         </footer>
       </div>
     </div>
-    <div id="foothills-shortcut" class="card">
-      <img src="./assets/foothills.svg" width=75 alt="Foothills Campus Shortcut" class="has-background-dark is-clickable" title="Go To Foothills Campus">
-    </div>
-    <div id="main-shortcut" class="card">
-      <img src="./assets/oval.svg" width=75 alt="Main Campus Shortcut" class="has-background-dark is-clickable" title="Go To Main Campus">
-    </div>
+    <img id="foothills-shortcut" 
+      src="./assets/foothills.svg" 
+      @click="goToFoothills"
+      width=65 
+      alt="Foothills Campus Shortcut" 
+      class="geoshortcut" 
+      title="Go To Foothills Campus">
+    <img id="main-shortcut" 
+      src="./assets/oval.svg"
+      @click="goToMain"
+      width=65 
+      alt="Main Campus Shortcut" 
+      class="geoshortcut" 
+      title="Go To Main Campus">
     `,
   
   data() {
@@ -315,7 +324,7 @@ createApp({
 
         layerView.queryFeatures(query).then((result) => {
           let treeTypes = result.features.map(feature => feature.attributes.New_Common);
-          this.currentTreeTypes = [...new Set(treeTypes)];
+          this.currentTreeTypes = [...new Set(treeTypes)].sort();
           //console.log("Unique tree types within the current extent:", this.currentTreeTypes);
         });
       }, 300); // 300ms debounce delay
@@ -337,8 +346,8 @@ createApp({
             symbol: {
               type: "simple-marker",
               style: "circle",
-              color: "rgba(255, 255, 255, 0.5)",
-              size: "32px",
+              color: "rgba(255, 255, 255, 0.1)",
+              size: "36px",
               outline: {
                 color: "#D9782D", // Aggie Orange!
                 width: 2
@@ -430,6 +439,22 @@ createApp({
           break;
       }
       return content + imageElement;
+    },
+    goToFoothills() {
+      rogueState.view.goTo({
+        target: [-105.15, 40.588],
+        zoom: 16
+      });
+    },
+    goToMain() {
+      rogueState.view.goTo({
+        target: [-105.084, 40.5758],
+        zoom: 16
+      });
+    },
+    clearSelectedTrees() {
+      this.selectedTreeType = null;
+      rogueState.selectedTreesGraphicsLayer.removeAll();
     },
     toggleSidePanel() {
       this.sidePanelIsCollapsed = !this.sidePanelIsCollapsed;

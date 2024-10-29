@@ -136,16 +136,27 @@ body {
 }
 
 #more-info {
-  z-index: 10;
-  position: absolute;
   right: 8px;
   top: 8px;
+}
+
+#clear-selection {
+  right: 8px;
+  bottom: 8px;
+  border: var(--csu-energy-green) solid 2px;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.csu-trees-action {
+  z-index: 10;
+  position: absolute;
   background-color: transparent;
   color: var(--csu-energy-green);
   transition: color 0.3s ease, background-color 0.3s ease;
 }
 
-#more-info:hover {
+.csu-trees-action:hover {
   color: white;
   cursor: pointer;
 }
@@ -243,6 +254,16 @@ a {
 }
 a:hover {
   color: var(--csu-energy-green);
+}
+
+.geoshortcut {
+  border-radius: 4px;
+  background-color: var(--csu-font-color);
+  padding: 4px;
+}
+.geoshortcut:hover {
+  background-color: gray;
+  cursor: pointer;
 }
 
 /* transition effects for our collapsible panel component */
