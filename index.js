@@ -166,19 +166,6 @@ createApp({
       thumbnailUrl: "./assets/csu-energy-basemap.png"
     });
 
-    let esriDefaultImagery = new TileLayer({ portalItem: { id: config.esriImageryPortalItemId } });
-
-    // ToDo: add imagery basemap option
-    let imageryBasemap = new Basemap({
-      baseLayers: [esriDefaultImagery],
-      referenceLayers: [
-        new VectorTileLayer({ portalItem: { id: config.esriImageryLabelsPortalItemId } })
-      ],
-      title: "Imagery",
-      id: "imagery",
-      thumbnailUrl: "./assets/imagery.jpg"
-    });
-
     const map = new Map({
       basemap: csuTreesBasemap
     });
@@ -271,6 +258,7 @@ createApp({
       nextBasemap: "hybrid",
       thumbnailUrl: "./assets/csu-energy-basemap.png"
     });
+    
     view.ui.add(basemapToggle, {
       position: "bottom-left"
     });
