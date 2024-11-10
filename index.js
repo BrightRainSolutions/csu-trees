@@ -2,7 +2,6 @@ import EsriConfig from "https://js.arcgis.com/4.30/@arcgis/core/config.js";
 import FeatureLayer from "https://js.arcgis.com/4.30/@arcgis/core/layers/FeatureLayer.js";
 import GraphicsLayer from "https://js.arcgis.com/4.30/@arcgis/core/layers/GraphicsLayer.js";
 import VectorTileLayer from "https://js.arcgis.com/4.30/@arcgis/core/layers/VectorTileLayer.js";
-import TileLayer from "https://js.arcgis.com/4.30/@arcgis/core/layers/TileLayer.js";
 import Map from "https://js.arcgis.com/4.30/@arcgis/core/Map.js";
 import MapView from "https://js.arcgis.com/4.30/@arcgis/core/views/MapView.js";
 import Basemap from "https://js.arcgis.com/4.30/@arcgis/core/Basemap.js";
@@ -16,8 +15,9 @@ import { createApp, markRaw } from "https://unpkg.com/vue@3/dist/vue.esm-browser
 
 import config from "./config.js";
 
-// custom components
-import CollapsiblePanel from './components/CollapsiblePanel.js';
+// ToDo: consider using this TreeType component to display the tree types in the sidebar
+// and manage the selection of tree types
+import TreeType from './components/TreeType.js';
 
 // Note that the widgets and other arc things will not work if we make them reactive data
 // setting a global object, so sue me
@@ -45,7 +45,7 @@ createApp({
           <h1 class="title is-3 has-text-white">CSU TREES</h1>
           <h2 class="subtitle is-4 has-text-white">Colorado State University</h2>
         </div>
-        <span id="clear-selection" v-show="selectedTreeType != null" class="is-size-6 csu-trees-action" @click="clearSelectedTrees">CLEAR SELECTED</span>
+        <span id="clear-selection" v-show="selectedTreeTypes.length>0" class="is-size-6 csu-trees-action" @click="clearSelectedTrees">CLEAR SELECTED</span>
       </div>
     </div>  
 
@@ -80,7 +80,7 @@ createApp({
               v-for="treeType in currentTreeTypes"
               :key="treeType"
               class="box tree-type has-text-centered is-clickable m-2"
-              :class="{ selected: selectedTreeType === treeType }"
+              :class="{ selected: selectedTreeTypes.includes(treeType) }"
               @click="selectTreesByType(treeType)"
             >
               <span class="is-size-6">{{ treeType }}</span>  
@@ -135,7 +135,7 @@ createApp({
   
   data() {
     return {
-      selectedTreeType: null, // To store the currently selected tree type
+      selectedTreeTypes: [],
       currentTreeTypes: [],
       layersThreshold: 8000,
       isThinking: false,
@@ -317,13 +317,28 @@ createApp({
         });
       }, 300); // 300ms debounce delay
     },
-
     selectTreesByType(treeType) {
-      this.selectedTreeType = treeType;
+      const index = this.selectedTreeTypes.indexOf(treeType);
+      if (index === -1) {
+        this.selectedTreeTypes.push(treeType);
+      } else {
+        this.selectedTreeTypes.splice(index, 1);
+      }
+      // Run the query against the trees feature layer with the selected tree types
+      // only if there are selected tree types
+      if (this.selectedTreeTypes.length > 0) {
+        this.queryTreesByTypes();
+      }
+      else {
+        rogueState.selectedTreesGraphicsLayer.removeAll();
+      }
+      this.queryTreesByTypes();
+    },
+    queryTreesByTypes() {
       // run a query to get the tree features of the selected type using the current extent client-side
       let query = rogueState.allTheTreesLayer.createQuery();  
       query.geometry = rogueState.view.extent;
-      query.where = `New_Common = '${treeType}'`;
+      query.where = `New_Common IN (${this.selectedTreeTypes.map(type => `'${type}'`).join(', ')})`;
       query.returnGeometry = true;
       query.outFields = ["New_Common"];
       rogueState.allTheTreesLayer.queryFeatures(query).then((result) => {
@@ -377,54 +392,60 @@ createApp({
 
       switch (commonName) {
         case "blue spruce":
-          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2016/04/blue-spruce-tree.jpg">`;
+          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2016/04/blue-spruce-tree.jpg" alt="blue spruce">`;
           break;
         case "boxelder":
-          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2016/06/BoxelderTree.jpg">`;
+          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2016/06/BoxelderTree.jpg" alt="boxelder">`;
           break;
         case "lodgepole pine":
-          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2014/02/lodgepole-tree2.jpg">`;
+          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2014/02/lodgepole-tree2.jpg" alt="lodgepole pine">`;
           break;
         case "ponderosa pine":
-          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2014/02/ponderosa-tree-modern.jpg">`;
+          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2014/02/ponderosa-tree-modern.jpg" alt="ponderosa pine">`;
           break;
         case "austrian pine":
-          imageElement = `<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Pin_laricio_Corse.jpg/180px-Pin_laricio_Corse.jpg">`;
+          imageElement = `<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Pin_laricio_Corse.jpg/180px-Pin_laricio_Corse.jpg" alt="austrian pine">`;
           break;
         case "pinyon pine":
-          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2016/04/pinon-tree.jpg">`;
+          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2016/04/pinon-tree.jpg" alt="pinyon pine">`;
           break;
         case "honeylocust":
         case "honey locust":
-          imageElement = `<img src="http://tree-pictures.com/beautiful-honeylocust.jpg">`;
+          imageElement = `<img src="http://tree-pictures.com/beautiful-honeylocust.jpg" alt="honeylocust">`;
           break;
         case "hackberry":
-          imageElement = `<img src="http://tree-pictures.com/hberrytree.jpg">`;
+          imageElement = `<img src="http://tree-pictures.com/hberrytree.jpg" alt="hackberry">`;
           break;
         case "green ash":
-          imageElement = `<img src="http://tree-pictures.com/ash-green.jpg">`;
+          imageElement = `<img src="http://tree-pictures.com/ash-green.jpg" alt="green ash">`;
           break;
         case "crabapple":
-          imageElement = `<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Purple_prince_crabapple_tree.JPG/720px-Purple_prince_crabapple_tree.JPG">`;
+          imageElement = `<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Purple_prince_crabapple_tree.JPG/720px-Purple_prince_crabapple_tree.JPG" alt="crabapple">`;
           break;
         case "ohio buckeye":
-          imageElement = `<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Aesculus_glabra_var._glabra.jpg">`;
+          imageElement = `<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Aesculus_glabra_var._glabra.jpg" alt="ohio buckeye">`;
           break;
         case "rocky mountain juniper":
-          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2016/04/RMJuniper-tree.jpg">`;
+          imageElement = `<img src="https://csfs.colostate.edu/wp-content/uploads/2016/04/RMJuniper-tree.jpg" alt="rocky mountain juniper">`;
           break;
         case "littleleaf linden":
-          imageElement = `<img src="https://shop-static.arborday.org/media/0004010_littleleaf-linden_510.jpeg">`;
+          imageElement = `<img src="https://shop-static.arborday.org/media/0004010_littleleaf-linden_510.jpeg" alt="littleleaf linden">`;
           break;
-        default:
-          if (properties.DecidConif === "D") {
-            imageElement = `<img src="./assets/deciduous.svg">`;
-          } else if (properties.DecidConif === "C") {
-            imageElement = `<img src="./assets/coniferous.svg">`;
-          } else {
-            imageElement = `<img src="./assets/c-tree.png">`;
-          }
+        case "american basswood":
+          imageElement = `<img src="https://www.treehugger.com/thmb/Yk5DG-GIuVnSVf1xqYblh6qUJ70=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-469222318-e534a0dee0c94c428d128d68a71f9ae6.jpg" alt="american basswood">`;
           break;
+        case "american elm":
+          imageElement = `<img src="https://upload.wikimedia.org/wikipedia/commons/8/86/American_Elm_Tree%2C_Old_South_Street%2C_Northampton%2C_MA_-_October_2019.jpg" alt="american elm">`;
+          break;
+        // default:
+        //   if (properties.DecidConif === "D") {
+        //     imageElement = `<img src="./assets/deciduous.svg" alt="deciduous tree">`;
+        //   } else if (properties.DecidConif === "C") {
+        //     imageElement = `<img src="./assets/coniferous.svg" alt="coniferous tree">`;
+        //   } else {
+        //     imageElement = `<img src="./assets/c-tree.png" alt="tree">`;
+        //   }
+        //   break;
       }
       return content + imageElement;
     },
@@ -441,7 +462,7 @@ createApp({
       });
     },
     clearSelectedTrees() {
-      this.selectedTreeType = null;
+      this.selectedTreeTypes = [];
       rogueState.selectedTreesGraphicsLayer.removeAll();
     },
     toggleSidePanel() {
@@ -459,6 +480,6 @@ createApp({
   },
 
   components: {
-    'collapsible-panel': CollapsiblePanel
+    'tree-type': TreeType
   }
 }).mount("#app");

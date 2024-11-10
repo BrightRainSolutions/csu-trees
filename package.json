@@ -4,12 +4,13 @@
   "description": "trees on the campus of colorado state university",
   "main": "index.js",
   "scripts": {
-    "start": "browser-sync start --server --watch --browser \"chrome\"",
-    "build": "copyfiles \"**/*\" -e 'node_modules/**/*' -e 'dist/**/*' dist"
+    "start": "web-dev-server --node-resolve --open --watch",
+    "build": "copyfiles \"**/*\" -e 'node_modules/**/*' -e 'dist/**/*' -e 'LICENSE' -e 'package.json' -e 'package-lock.json' -e 'README.md' dist"
   },
   "author": "bright rain solutions",
   "license": "MIT",
   "devDependencies": {
+    "@web/dev-server": "^0.4.6",
     "copyfiles": "^2.4.1"
   },
   "dependencies": {
